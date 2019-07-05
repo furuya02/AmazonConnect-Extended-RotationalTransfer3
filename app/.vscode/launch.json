@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "デバッグ実行",
+            "program": "${workspaceRoot}/.vscode/drive.js",
+            "cwd": "${workspaceRoot}/dst",
+            "outFiles": [ "${workspaceRoot}/dst/*.js" ], 
+            "env": {
+                "TZ": "Asia/Tokyo",
+                "BucketName": "connect-extended-rotationaltransfer-bucket-sdju99xre093",
+                "IsLocal": "Yes"
+            },
+            "args": [
+                "event.json",
+            ]
+        }
+    ]
+}
+

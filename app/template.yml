@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: sample
+
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    DependsOn: [FunctionRole,Bucket]
+    Properties:
+      CodeUri: dst/
+      Handler: index.handler
+      Runtime: nodejs10.x
+      Timeout: 8
+      Role: !GetAtt FunctionRole.Arn
+      Environment:
+        Variables:
+          TZ: Asia/Tokyo
+          BucketName: !Ref Bucket
+
+  Bucket:
+    Type: AWS::S3::Bucket
+
+  FunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+      -
+        PolicyName: s3-bucket
+        PolicyDocument: 
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - 's3:GetObject'
+            Resource:
+            - !Sub '${Bucket.Arn}/*'
+
+          - Effect: Allow
+            Action:
+            - logs:PutLogEvents
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            Resource:
+            - !Sub "arn:aws:logs:${AWS::Region}:*:*"
+
+Outputs:
+  Function:
+    Description: "Lambda Function ARN"
+    Value: !Ref Function
+  Bucket:
+    Description: "Setting File Bucket"
+    Value: !Ref Bucket
+  FunctionRole:
+    Description: "IAM Role created for function"
+    Value: !GetAtt FunctionRole.Arn
